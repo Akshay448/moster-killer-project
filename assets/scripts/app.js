@@ -1,6 +1,7 @@
 const ATTACK_VALUE = 10;
 const STRONG_ATTACK_VALUE = 17;
 const MONSTER_ATTACK_VALUE = 14;
+const HEAL_VALUE = 20;
 
 let chosenMaxLife = 100;
 let currentMonsterHealth = chosenMaxLife;
@@ -8,19 +9,9 @@ let currentPlayerHealth = chosenMaxLife;
 
 adjustHealthBars(chosenMaxLife);
 
-function attackMonster(mode) {
-  let maxDamage;
-  if (mode === 'ATTACK') {
-    maxDamage = ATTACK_VALUE;
-  } else if (mode === 'STRONG_ATTACK') {
-    maxDamage = STRONG_ATTACK_VALUE;
-  }
-  const damage = dealMonsterDamage(maxDamage);
-  console.log("damage to monster " + damage);
-  currentMonsterHealth -= damage;
-  console.log("currentMonsterHealth " + currentMonsterHealth);
+function endRound() {
   const playerDamage = dealPlayerDamage(MONSTER_ATTACK_VALUE);
-  console.log("damage to player " + playerDamage);
+  console.log("playerDamage " + playerDamage);
   currentPlayerHealth -= playerDamage;
   console.log("currentPlayerHealth " + currentPlayerHealth);
   if (currentMonsterHealth <= 0 && currentPlayerHealth > 0) {
@@ -32,6 +23,18 @@ function attackMonster(mode) {
   }
 }
 
+function attackMonster(mode) {
+  let maxDamage;
+  if (mode === 'ATTACK') {
+    maxDamage = ATTACK_VALUE;
+  } else if (mode === 'STRONG_ATTACK') {
+    maxDamage = STRONG_ATTACK_VALUE;
+  }
+  const damage = dealMonsterDamage(maxDamage);
+  currentMonsterHealth -= damage;
+  endRound();
+}
+
 function attackHandler() {
   attackMonster('ATTACK');
 }
@@ -40,5 +43,21 @@ function strongAttackHandler() {
   attackMonster('STRONG_ATTACK');
 }
 
+function healPlayerHandler() {
+  let healValue;
+  if (currentPlayerHealth >= chosenMaxLife - HEAL_VALUE) {
+    alert("You can't heal to more than your max initial health.");
+    healValue = chosenMaxLife - currentPlayerHealth;
+  } else {
+    healValue = HEAL_VALUE;
+  }
+  console.log("healValue " + healValue);
+  increasePlayerHealth(healValue);
+  currentPlayerHealth += healValue;
+  console.log("currentPlayerHealth " + currentPlayerHealth);
+  endRound();
+}
+
 attackBtn.addEventListener('click', attackHandler);
 strongAttackBtn.addEventListener('click', strongAttackHandler);
+healBtn.addEventListener('click', healPlayerHandler);
